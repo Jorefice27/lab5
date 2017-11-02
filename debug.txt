@@ -1,8 +1,0 @@
-at time 4 process 3 has 15 seconds remaining
-at time 17 process 16 has 9 seconds remaining
-at time 21 process 0 has 24 seconds remaining
-at time 24 process 3 has 14 seconds remaining
-at time 30 process 9 has 30 seconds remaining
-at time 37 process 16 has 8 seconds remaining
-at time 38 process 17 has 30 seconds remaining
-at time 39 process 18 has 9 seconds remaining

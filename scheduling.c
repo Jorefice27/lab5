@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <unistd.h>
 
 #define NUM_PROCESSES 20
 
@@ -55,13 +56,13 @@ int main()
            proc[i].priority);
 
   /* Run scheduling algorithms */
-  printf("\n\nFirst come first served\n");
+  // printf("\n\nFirst come first served\n");
   memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
-  first_come_first_served(proc_copy);
+  // first_come_first_served(proc_copy);
 
-  printf("\n\nShortest remaining time\n");
+  // printf("\n\nShortest remaining time\n");
   memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
-  shortest_remaining_time(proc_copy);
+  // shortest_remaining_time(proc_copy);
 
   printf("\n\nRound Robin\n");
   memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
@@ -174,46 +175,37 @@ void round_robin(struct process *proc)
   int t = 0;
   int i;
   int complete = 0;
-  int temp = 0;
-  while(complete < NUM_PROCESSES && temp++ < 2)
+  int t0;
+  printf("Round Robin Starting\n");
+  while(complete < NUM_PROCESSES)
   {
-
+    t0 = t;
     for(i = 0; i < NUM_PROCESSES; i++)
     {
-      //Execute for it's first time slice
-      if(proc[i].arrivaltime <= t && proc[i].remainingtime < 0)
+      if(proc[i].arrivaltime <= t)
       {
-        printf("Process %d started at time %d\n", i, t++);
-        proc[i].remainingtime = proc[i].runtime - 1;
-        fprintf(fp, "at time %d process %d has %d seconds remaining\n", t, i, proc[i].remainingtime);
-        if(proc[i].remainingtime == 0)
+        if(proc[i].remainingtime < 0)
         {
-          complete++;
+          printf("Process %d started at time %d\n", i, t);
+          proc[i].remainingtime = proc[i].runtime;
+        }
+        if(proc[i].remainingtime > 0)
+        {
+          proc[i].remainingtime--;
+          t++;
+        }
+        if(proc[i].remainingtime == 0 && proc[i].endtime == 0)
+        {
           proc[i].endtime = t;
           printf("Process %d finished at time %d\n", i, t);
         }
-      }
-      //execute for the rest of its time
-      else if(proc[i].arrivaltime <= t && proc[i].endtime == 0 && proc[i].remainingtime > 0)
-      {
-        t++;
-        proc[i].remainingtime--;
-        fprintf(fp, "at time %d process %d has %d seconds remaining\n", t, i, proc[i].remainingtime);
-        if(proc[i].remainingtime == 0)
-        {
-          complete++;
-          proc[i].endtime = t;
-          printf("Process %d finished at time %d\n", i, t);
-        }
-      }
-      //it's already finished
-      else
-      {
-        t++;
       }
     }
+    if(t0 == t)
+    {
+      t++;
+    }
   }
-
   getAverageTime(proc);
 }
 
