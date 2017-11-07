@@ -57,16 +57,16 @@ int main()
 
   /* Run scheduling algorithms */
   // printf("\n\nFirst come first served\n");
-  memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
+  // memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
   // first_come_first_served(proc_copy);
-
+  //
   // printf("\n\nShortest remaining time\n");
-  memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
+  // memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
   // shortest_remaining_time(proc_copy);
-
-  printf("\n\nRound Robin\n");
-  memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
-  round_robin(proc_copy);
+  //
+  // printf("\n\nRound Robin\n");
+  // memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
+  // round_robin(proc_copy);
 
   printf("\n\nRound Robin with priority\n");
   memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
@@ -169,14 +169,11 @@ void shortest_remaining_time(struct process *proc)
 
 void round_robin(struct process *proc)
 {
-  //----------------------------------------------------------------------------
-  FILE *fp = fopen("debug.txt", "w");
-  //----------------------------------------------------------------------------
   int t = 0;
   int i;
   int complete = 0;
   int t0;
-  printf("Round Robin Starting\n");
+
   while(complete < NUM_PROCESSES)
   {
     t0 = t;
@@ -211,7 +208,19 @@ void round_robin(struct process *proc)
 
 void round_robin_priority(struct process *proc)
 {
-  /* Implement scheduling algorithm here */
+  int t = 0;
+  int i, t0;
+  int complete = 0;
+
+  while(complete < NUM_PROCESSES)
+  {
+    t0 = t;
+
+    if(t0 == t)
+    {
+      t++;
+    }
+  }
 }
 
 void getAverageTime(struct process *proc)
