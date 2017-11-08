@@ -1,8 +1,25 @@
+In this lab we wrote four different scheduling algorithms, first come
+first served, shortest remaining time, round robin, and round robin with
+priority. First come first served was definitely the easiest to write,
+but clearly would not be a good implementation for an operating system
+scheduler. Shortest time remaining was also fairly simple to implement,
+and had the shortest average time from arrival to finish, however once again,
+if this were to be implemented on a real operating system any long processes
+would take even longer to complete since they would consistently have to
+forfeit their CPU time for the countless shorter processes running. Round robin,
+although being slightly harder to implement and resulting in a the longest
+average time from arrival to finish, does give all processes a fairly equal
+chance at CPU time. Finally, round robin with priority sees improved performance
+over normal round robin. Additionally, it allows processes with higher priority
+to finish ahead of processes with lower priority, but still divides CPU time even
+within priority levels. This was challenging to implement cleanly with a single array,
+so I made a slight modification to the queue that I made for project two, which made
+implementing this algorithm fairly straight forward.
 
-
-
-
+----------------------------------------------------------------------------------------------------
 Output:
+----------------------------------------------------------------------------------------------------
+
 Process	arrival	runtime	priority
 0	10	25	0
 1	69	36	2

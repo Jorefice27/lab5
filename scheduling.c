@@ -217,7 +217,7 @@ void round_robin(struct process *proc)
 void round_robin_priority(struct process *proc)
 {
   int t = 0;
-  int priority, index, i, t0, j;
+  int i;
   int complete = 0;
 
   //create queues for each priority level
