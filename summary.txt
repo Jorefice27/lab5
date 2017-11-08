@@ -14,7 +14,10 @@ over normal round robin. Additionally, it allows processes with higher priority
 to finish ahead of processes with lower priority, but still divides CPU time even
 within priority levels. This was challenging to implement cleanly with a single array,
 so I made a slight modification to the queue that I made for project two, which made
-implementing this algorithm fairly straight forward.
+implementing this algorithm fairly straight forward. After implementing our own
+scheduling algorithms, we looked at the source code for the scheduling algorithm
+written by HP. This implemented a "goodness" measure to dictate which process to
+schedule next in it's priority round robin system.
 
 ----------------------------------------------------------------------------------------------------
 Output:
