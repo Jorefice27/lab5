@@ -53,21 +53,22 @@ int main()
   /* Show process values */
   printf("Process\tarrival\truntime\tpriority\n");
   for(i=0; i<NUM_PROCESSES; i++)
-    printf("%d\t%d\t%d\t%d\n", i, proc[i].arrivaltime, proc[i].runtime,
-           proc[i].priority);
+    printf("%d\t%d\t%d\t%d\n", i, proc[i].arrivaltime, proc[i].runtime, proc[i].priority);
+
+
 
   /* Run scheduling algorithms */
-  // printf("\n\nFirst come first served\n");
-  // memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
-  // first_come_first_served(proc_copy);
-  //
-  // printf("\n\nShortest remaining time\n");
-  // memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
-  // shortest_remaining_time(proc_copy);
-  //
-  // printf("\n\nRound Robin\n");
-  // memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
-  // round_robin(proc_copy);
+  printf("\n\nFirst come first served\n");
+  memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
+  first_come_first_served(proc_copy);
+
+  printf("\n\nShortest remaining time\n");
+  memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
+  shortest_remaining_time(proc_copy);
+
+  printf("\n\nRound Robin\n");
+  memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
+  round_robin(proc_copy);
 
   printf("\n\nRound Robin with priority\n");
   memcpy(proc_copy, proc, NUM_PROCESSES * sizeof(struct process));
@@ -184,18 +185,23 @@ void round_robin(struct process *proc)
       {
         if(proc[i].remainingtime < 0)
         {
-          printf("Process %d started at time %d\n", i, t);
           proc[i].remainingtime = proc[i].runtime;
         }
-        if(proc[i].remainingtime > 0)
+        else if(proc[i].remainingtime > 0)
         {
+          if(proc[i].remainingtime == proc[i].runtime)
+          {
+            printf("Process %d started at time %d\n", i, t);
+          }
           proc[i].remainingtime--;
           t++;
-        }
-        if(proc[i].remainingtime == 0 && proc[i].endtime == 0)
-        {
-          proc[i].endtime = t;
-          printf("Process %d finished at time %d\n", i, t);
+
+          if(proc[i].remainingtime == 0 && proc[i].endtime == 0)
+          {
+            proc[i].endtime = t;
+            printf("Process %d finished at time %d\n", i, t);
+            complete++;
+          }
         }
       }
     }
@@ -213,11 +219,11 @@ void round_robin_priority(struct process *proc)
   int t = 0;
   int priority, index, i, t0, j;
   int complete = 0;
+
+  //create queues for each priority level
   Node p0 = {NULL, NULL, NULL, 0, 0};
   Node p1 = {NULL, NULL, NULL, 0, 0};
   Node p2 = {NULL, NULL, NULL, 0, 0};
-  // addToEnd(&p1, &proc[0]);
-  // printf("Process arrived at %d\n", n.proc->arrivaltime);
 
   while(complete < NUM_PROCESSES)
   {
@@ -240,20 +246,26 @@ void round_robin_priority(struct process *proc)
           {
             addToEnd(&p0, &proc[i], i);
           }
-          printf("Process %d started at time %d\n", i, t);
           proc[i].remainingtime = proc[i].runtime;
         }
       }
     }
+    //remove a task from the highest priority, non empty, queue and run it
     if(p2.size > 0)
     {
       Node n = pop(&p2);
+      if(n.proc->remainingtime == n.proc->runtime)
+      {
+        printf("Process %d started at time %d\n", n.id, t);
+      }
       n.proc->remainingtime --;
       t++;
+      //put it at the end of the queue if it still needs to run
       if(n.proc->remainingtime > 0)
       {
         addToEnd(&p2, n.proc, n.id);
       }
+      //report that it's finished
       else if(n.proc->remainingtime == 0 && n.proc->endtime == 0)
       {
         complete++;
@@ -264,6 +276,10 @@ void round_robin_priority(struct process *proc)
     else if(p1.size > 0)
     {
       Node n = pop(&p1);
+      if(n.proc->remainingtime == n.proc->runtime)
+      {
+        printf("Process %d started at time %d\n", n.id, t);
+      }
       n.proc->remainingtime --;
       t++;
       if(n.proc->remainingtime > 0)
@@ -280,6 +296,10 @@ void round_robin_priority(struct process *proc)
     else if(p0.size > 0)
     {
       Node n = pop(&p0);
+      if(n.proc->remainingtime == n.proc->runtime)
+      {
+        printf("Process %d started at time %d\n", n.id, t);
+      }
       n.proc->remainingtime --;
       t++;
       if(n.proc->remainingtime > 0)
