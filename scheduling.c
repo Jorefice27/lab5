@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include <unistd.h>
+#include "scheduling.h"
 
 #define NUM_PROCESSES 20
 
@@ -198,6 +199,7 @@ void round_robin(struct process *proc)
         }
       }
     }
+    //increment time if we couldn't run any processes
     if(t0 == t)
     {
       t++;
@@ -209,18 +211,94 @@ void round_robin(struct process *proc)
 void round_robin_priority(struct process *proc)
 {
   int t = 0;
-  int i, t0;
+  int priority, index, i, t0, j;
   int complete = 0;
+  Node p0 = {NULL, NULL, NULL, 0, 0};
+  Node p1 = {NULL, NULL, NULL, 0, 0};
+  Node p2 = {NULL, NULL, NULL, 0, 0};
+  // addToEnd(&p1, &proc[0]);
+  // printf("Process arrived at %d\n", n.proc->arrivaltime);
 
   while(complete < NUM_PROCESSES)
   {
-    t0 = t;
-
-    if(t0 == t)
+    //add new processes to the correct queue
+    for(i = 0; i < NUM_PROCESSES; i++)
+    {
+      if(proc[i].arrivaltime <= t)
+      {
+        if(proc[i].remainingtime < 0)
+        {
+          if(proc[i].priority == 2)
+          {
+            addToEnd(&p2, &proc[i], i);
+          }
+          else if(proc[i].priority == 1)
+          {
+            addToEnd(&p1, &proc[i], i);
+          }
+          else
+          {
+            addToEnd(&p0, &proc[i], i);
+          }
+          printf("Process %d started at time %d\n", i, t);
+          proc[i].remainingtime = proc[i].runtime;
+        }
+      }
+    }
+    if(p2.size > 0)
+    {
+      Node n = pop(&p2);
+      n.proc->remainingtime --;
+      t++;
+      if(n.proc->remainingtime > 0)
+      {
+        addToEnd(&p2, n.proc, n.id);
+      }
+      else if(n.proc->remainingtime == 0 && n.proc->endtime == 0)
+      {
+        complete++;
+        proc[n.id].endtime = t;
+        printf("Process %d finished at time %d\n", n.id, t);
+      }
+    }
+    else if(p1.size > 0)
+    {
+      Node n = pop(&p1);
+      n.proc->remainingtime --;
+      t++;
+      if(n.proc->remainingtime > 0)
+      {
+        addToEnd(&p1, n.proc, n.id);
+      }
+      else if(n.proc->remainingtime == 0 && n.proc->endtime == 0)
+      {
+        complete++;
+        proc[n.id].endtime = t;
+        printf("Process %d finished at time %d\n", n.id, t);
+      }
+    }
+    else if(p0.size > 0)
+    {
+      Node n = pop(&p0);
+      n.proc->remainingtime --;
+      t++;
+      if(n.proc->remainingtime > 0)
+      {
+        addToEnd(&p0, n.proc, n.id);
+      }
+      else if(n.proc->remainingtime == 0 && n.proc->endtime == 0)
+      {
+        complete++;
+        proc[n.id].endtime = t;
+        printf("Process %d finished at time %d\n", n.id, t);
+      }
+    }
+    else
     {
       t++;
     }
   }
+  getAverageTime(proc);
 }
 
 void getAverageTime(struct process *proc)
@@ -234,4 +312,50 @@ void getAverageTime(struct process *proc)
 
   sum /= NUM_PROCESSES;
   printf("Average time from arrival to finish is %d seconds\n", sum);
+}
+
+void addToEnd(Node *head, struct process* proc, int id)
+{
+	if(head->size == 0)
+	{
+		addToEmpty(head, proc, id);
+		return;
+	}
+  //create Node struct
+	Node* temp = (Node*) malloc(sizeof(Node));
+  temp->proc = proc;
+  temp->id = id;
+
+  head->prev->next = temp;
+  temp->prev = head->prev;
+	temp->next = head;
+	head->prev = temp;
+	head->size++;
+}
+
+void addToEmpty(Node *head, struct process* proc, int id)
+{
+  //create Node struct
+	Node* temp = (Node*) malloc(sizeof(Node));
+  temp->proc = proc;
+  temp->id = id;
+
+	head->next = temp;
+	head->prev = temp;
+	temp->next = head;
+	temp->prev = head;
+	head->size++;
+}
+
+Node pop(Node *head)
+{
+	if(head->size > 0)
+	{
+		Node r = *head->next;
+		head->next = r.next;
+		head->next->prev = head;
+		head->size--;
+
+		return r;
+	}
 }
